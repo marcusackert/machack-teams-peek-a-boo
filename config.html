@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Peek-a-boo settings</title>
+    <link rel="icon" href="./favicon.svg" />
+  </head>
+  <body>
+    <header class="apphead" id="apphead" hidden>
+      <div class="logo"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></div>
+      <h1>Peek-a-boo</h1>
+      <nav><a href="./index.html">Channel</a><a class="on" href="./config.html">Settings</a></nav>
+    </header>
+
+    <main class="setup">
+      <section class="panel">
+        <h2>Peek into another tenant</h2>
+        <p>Sign in with your guest account in the other organization and pick the channel to show.</p>
+
+        <div class="field">
+          <label for="link">Link</label>
+          <input id="link" placeholder="Paste a channel link (… → Get link to channel) – optional" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="tenant">Tenant</label>
+          <input id="tenant" placeholder="contoso.com or tenant ID" autocomplete="off" spellcheck="false" />
+          <span></span>
+          <div class="row">
+            <button class="btn primary" id="signin" type="button">Sign in</button>
+            <button class="btn" id="signout" type="button" hidden>Sign out</button>
+            <span class="who" id="who"></span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="team">Team</label>
+          <select id="team" disabled><option value="">Sign in first</option></select>
+        </div>
+        <div class="field">
+          <label for="channel">Channel</label>
+          <select id="channel" disabled><option value="">Pick a team first</option></select>
+        </div>
+
+        <div class="msg-line" id="msg" role="status"></div>
+        <div class="footer"><button class="btn primary" id="save" type="button" disabled>Save</button></div>
+
+        <div class="hint">
+          <p>⚠ Reading messages needs <b>ChannelMessage.Read.All</b>, which an admin in the other tenant must approve once.</p>
+          <button class="btn" id="copy-consent" type="button">Copy admin consent link</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./src/config.ts"></script>
+  </body>
+</html>

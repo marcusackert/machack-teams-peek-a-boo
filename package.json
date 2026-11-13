@@ -1,0 +1,24 @@
+{
+  "name": "machack-teams-peek-a-boo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Teams app that shows a read-only view of a channel in another Microsoft 365 tenant",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "package": "pwsh -NoProfile -File scripts/package.ps1"
+  },
+  "dependencies": {
+    "@azure/msal-browser": "^5.29.1",
+    "@microsoft/teams-js": "^2.59.0",
+    "dompurify": "^3.4.17"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}

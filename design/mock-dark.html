@@ -1,0 +1,143 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Peek-a-boo mock</title>
+<style>
+:root{--bg:#1f1f1f;--rail:#141414;--top:#0a0a0a;--surf:#292929;--surf2:#2e2e2e;--line:#3d3d3d;--txt:#ffffff;--sub:#adadad;--acc:#7f85f5;--acc2:#4f52b2;--green:#6bb700;--warn:#f8d22a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;background:var(--bg);color:var(--txt);font:14px/1.45 "Segoe UI",system-ui,sans-serif;display:grid;grid-template-rows:48px 1fr;grid-template-columns:68px 1fr;overflow:hidden}
+.titlebar{grid-column:1/3;background:var(--top);display:flex;align-items:center;padding:0 12px;gap:12px;border-bottom:1px solid #000}
+.titlebar .search{margin:0 auto;width:520px;height:32px;background:#292929;border-radius:6px;color:var(--sub);display:flex;align-items:center;padding:0 12px;font-size:13px}
+.titlebar .me{width:32px;height:32px;border-radius:50%;background:#c19c00;display:grid;place-items:center;font-weight:600;font-size:12px;color:#000;position:relative}
+.titlebar .me:after{content:"";position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--top)}
+.org{font-size:12px;color:var(--sub);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+.rail{background:var(--rail);display:flex;flex-direction:column;align-items:center;padding-top:6px;gap:2px}
+.ri{width:60px;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:var(--sub);border-radius:6px;position:relative}
+.ri svg{width:22px;height:22px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:1.6}
+.ri.on{color:var(--acc)}
+.ri.on:before{content:"";position:absolute;left:-4px;top:14px;bottom:14px;width:3px;background:var(--acc);border-radius:2px}
+.main{display:flex;flex-direction:column;min-height:0}
+.apphead{height:60px;display:flex;align-items:center;padding:0 20px;gap:14px;border-bottom:1px solid var(--line);background:var(--bg)}
+.logo{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center}
+.logo svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
+.apphead h1{font-size:18px;font-weight:700}
+.tabs{display:flex;gap:22px;margin-left:18px;height:100%}
+.tab{display:flex;align-items:center;color:var(--sub);font-weight:600;position:relative}
+.tab.on{color:var(--txt)}
+.tab.on:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--acc);border-radius:2px 2px 0 0}
+.icons{margin-left:auto;display:flex;gap:6px}
+.ib{width:32px;height:32px;border-radius:4px;display:grid;place-items:center;color:var(--sub)}
+.ib:hover{background:var(--surf)}
+.ib svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7}
+.crumb{display:flex;align-items:center;gap:10px;padding:10px 24px;background:#252525;border-bottom:1px solid var(--line);font-size:13px}
+.tenant{display:flex;align-items:center;gap:6px;background:#3a2f12;color:var(--warn);border:1px solid #6b5514;padding:2px 8px;border-radius:4px;font-weight:600;font-size:12px}
+.crumb .sep{color:#666}
+.crumb b{font-weight:600}
+.live{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--sub);font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(107,183,0,.2)}
+.feed{flex:1;overflow:hidden;padding:18px 24px 0;display:flex;flex-direction:column;gap:14px}
+.daysep{display:flex;align-items:center;gap:12px;color:var(--sub);font-size:12px}
+.daysep:before,.daysep:after{content:"";flex:1;height:1px;background:var(--line)}
+.post{background:var(--surf);border-radius:6px;border:1px solid #333;max-width:1100px}
+.post.unread{border-left:3px solid var(--acc)}
+.msg{display:flex;gap:12px;padding:12px 16px}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+.meta{display:flex;gap:10px;align-items:baseline}
+.name{font-weight:600}
+.time{color:var(--sub);font-size:12px}
+.guest{font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+.subject{font-weight:700;font-size:15px;margin:2px 0}
+.body{margin-top:2px}
+.mention{color:var(--acc);background:rgba(127,133,245,.12);border-radius:3px;padding:0 3px;font-weight:600}
+.file{display:inline-flex;align-items:center;gap:10px;margin-top:8px;background:var(--surf2);border:1px solid var(--line);border-radius:4px;padding:8px 12px;width:320px}
+.file .w{width:28px;height:28px;border-radius:3px;background:#185abd;display:grid;place-items:center;font-weight:700;font-size:13px}
+.file small{display:block;color:var(--sub);font-size:11px}
+.react{display:inline-flex;gap:6px;margin-top:8px}
+.react span{background:var(--surf2);border:1px solid var(--line);border-radius:12px;padding:0 8px;font-size:12px}
+.replies{border-top:1px solid #353535;padding:4px 16px 8px 60px}
+.more{color:var(--acc);font-size:13px;font-weight:600;padding:6px 0;display:flex;gap:8px;align-items:center}
+.more .avs{display:flex}
+.more .avs i{width:20px;height:20px;border-radius:50%;margin-left:-5px;border:2px solid var(--surf);display:grid;place-items:center;font-style:normal;font-size:9px;color:#000}
+.reply{display:flex;gap:10px;padding:8px 0}
+.reply .av{width:28px;height:28px;font-size:11px}
+.img{margin-top:8px;width:360px;height:120px;border-radius:4px;background:linear-gradient(135deg,#2b3a55,#1d2738);border:1px solid var(--line);position:relative;overflow:hidden;font-family:Consolas,monospace;font-size:11px;color:#9cdcfe;padding:10px}
+.img em{color:#ce9178;font-style:normal}
+.foot{display:flex;align-items:center;gap:10px;padding:12px 24px;border-top:1px solid var(--line);background:#252525;color:var(--sub);font-size:13px}
+.foot a{color:var(--acc);text-decoration:none;font-weight:600}
+.btn{margin-left:auto;border:1px solid var(--line);background:var(--surf);color:var(--txt);border-radius:4px;padding:5px 14px;font-weight:600;font-size:13px}
+</style></head><body>
+<div class="titlebar">
+  <div class="ib"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>
+  <div class="ib"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+  <div class="search">🔍&nbsp;&nbsp;Search</div>
+  <span class="org">Fabrikam</span>
+  <div class="me">AM</div>
+</div>
+<nav class="rail">
+  <div class="ri"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z M10 21h4"/></svg>Activity</div>
+  <div class="ri"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>Chat</div>
+  <div class="ri"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1 6 4"/></svg>Teams</div>
+  <div class="ri"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</div>
+  <div class="ri"><svg viewBox="0 0 24 24"><path d="M5 16V8l4 2V8l4 2V8l6 4-6 4v-2l-4 2v-2z"/></svg>Calls</div>
+  <div class="ri on"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Peek-a-boo</div>
+  <div class="ri"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg></div>
+  <div class="ri" style="margin-top:auto;margin-bottom:8px"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><path d="M16.5 13v7M13 16.5h7"/></svg>Apps</div>
+</nav>
+<main class="main">
+  <div class="apphead">
+    <div class="logo"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+    <h1>Peek-a-boo</h1>
+    <div class="tabs"><div class="tab on">Channel</div><div class="tab">Settings</div><div class="tab">About</div></div>
+    <div class="icons">
+      <div class="ib" title="Refresh"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg></div>
+      <div class="ib" title="Switch channel"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></div>
+    </div>
+  </div>
+  <div class="crumb">
+    <span class="tenant">🔒 Contoso Ltd · external tenant</span>
+    <span>Project Falcon</span><span class="sep">›</span><b># General</b>
+    <span class="live"><span class="dot"></span>Live · refreshed 12 s ago · signed in as alex.m (Guest)</span>
+  </div>
+  <section class="feed">
+    <div class="daysep">Today</div>
+    <article class="post">
+      <div class="msg">
+        <div class="av" style="background:#e3a0c9;color:#000">AL</div>
+        <div>
+          <div class="meta"><span class="name">Anna Lind</span><span class="time">09:12</span></div>
+          <div class="subject">v2.3 release notes</div>
+          <div class="body">Release notes for v2.3 are up — please review before Friday so we can lock the scope.</div>
+          <div class="file"><div class="w">W</div><div>release-notes-v2.3.docx<small>Project Falcon › Files › Releases</small></div></div>
+          <div class="react"><span>👍 4</span><span>👀 2</span></div>
+        </div>
+      </div>
+      <div class="replies"><div class="more"><span class="avs"><i style="background:#8fd3a8">EN</i><i style="background:#f4b183">JK</i><i style="background:#9fb6ff">PS</i></span>3 replies from Erik, Johan and Priya · last 09:40 ▾</div></div>
+    </article>
+    <article class="post">
+      <div class="msg">
+        <div class="av" style="background:#8fd3a8;color:#000">EN</div>
+        <div>
+          <div class="meta"><span class="name">Erik Nordin</span><span class="time">10:05</span></div>
+          <div class="body">Build pipeline is green again 🎉 Flaky integration test was a timezone issue.</div>
+        </div>
+      </div>
+      <div class="replies">
+        <div class="reply"><div class="av" style="background:#c19c00;color:#000">AM</div><div><div class="meta"><span class="name">Alex Morgan</span><span class="guest">Guest</span><span class="time">10:07</span></div><div class="body">Nice, thanks Erik!</div></div></div>
+      </div>
+    </article>
+    <article class="post unread">
+      <div class="msg">
+        <div class="av" style="background:#9fb6ff;color:#000">SY</div>
+        <div>
+          <div class="meta"><span class="name">Sara Ylvén</span><span class="time">11:30</span></div>
+          <div class="body"><span class="mention">Alex Morgan</span> can you check the API contract for the orders endpoint? Snippet below.</div>
+          <div class="img">GET /api/v2/orders/{id}<br>{<br>&nbsp;&nbsp;"id": <em>"ord_4821"</em>,<br>&nbsp;&nbsp;"status": <em>"shipped"</em>,<br>&nbsp;&nbsp;"customerRef": <em>"C-1093"</em><br>}</div>
+        </div>
+      </div>
+    </article>
+  </section>
+  <div class="foot">
+    👁 Read-only view of a channel in another tenant ·
+    <a href="#">Open in Teams (Contoso) ↗</a>
+    <span class="btn">Load older messages</span>
+  </div>
+</main>
+</body></html>

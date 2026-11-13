@@ -1,0 +1,54 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.19",
+  "version": "1.0.0",
+  "id": "{{TEAMS_APP_ID}}",
+  "developer": {
+    "name": "Peek-a-boo",
+    "websiteUrl": "https://{{APP_HOST}}/index.html",
+    "privacyUrl": "https://{{APP_HOST}}/index.html",
+    "termsOfUseUrl": "https://{{APP_HOST}}/index.html"
+  },
+  "name": {
+    "short": "Peek-a-boo",
+    "full": "Peek-a-boo – view a channel in another tenant"
+  },
+  "description": {
+    "short": "Read a Teams channel from another Microsoft 365 tenant without switching.",
+    "full": "Peek-a-boo signs you in with your guest account in another organization and shows a read-only, auto-refreshing view of one of its Teams channels, right inside your own tenant."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#5B5FC7",
+  "staticTabs": [
+    {
+      "entityId": "channel",
+      "name": "Channel",
+      "contentUrl": "https://{{APP_HOST}}/index.html",
+      "websiteUrl": "https://{{APP_HOST}}/index.html",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "settings",
+      "name": "Settings",
+      "contentUrl": "https://{{APP_HOST}}/config.html",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "about",
+      "scopes": ["personal"]
+    }
+  ],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://{{APP_HOST}}/config.html",
+      "canUpdateConfiguration": true,
+      "scopes": ["team", "groupChat"],
+      "context": ["channelTab", "privateChatTab", "meetingChatTab"]
+    }
+  ],
+  "permissions": ["identity"],
+  "validDomains": ["{{APP_DOMAIN}}", "login.microsoftonline.com"]
+}

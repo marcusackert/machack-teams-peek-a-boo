@@ -1,0 +1,47 @@
+name: Release Teams app package
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag (e.g. v1.0.0)
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      # Site served by deploy.yml (GitHub Pages project site).
+      APP_HOST: ${{ vars.APP_HOST || format('{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+      TEAMS_APP_ID: ${{ vars.TEAMS_APP_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check configuration
+        run: |
+          test -n "$TEAMS_APP_ID" || { echo "::error::Set repository variable TEAMS_APP_ID"; exit 1; }
+          test -n "${{ vars.VITE_CLIENT_ID }}" || echo "::warning::Repository variable VITE_CLIENT_ID is not set; sign-in will not work"
+      - name: Build Teams package
+        shell: pwsh
+        run: |
+          ./scripts/package.ps1
+          $v = $env:TAG.TrimStart('v')
+          Move-Item appPackage/build/peek-a-boo.zip "appPackage/build/peek-a-boo-$v.zip"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ZIP=$(ls appPackage/build/peek-a-boo-*.zip)
+          NOTES="Teams app package for https://${APP_HOST}/
+
+          Install: Teams → Apps → Manage your apps → Upload an app → Upload a custom app → pick the zip."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            gh release create "$TAG" "$ZIP" --title "Peek-a-boo $TAG" --notes "$NOTES" --target "$GITHUB_SHA"
+          fi

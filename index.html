@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Peek-a-boo</title>
+    <link rel="icon" href="./favicon.svg" />
+  </head>
+  <body>
+    <header class="apphead" id="apphead" hidden>
+      <div class="logo"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></div>
+      <h1>Peek-a-boo</h1>
+      <nav><a class="on" href="./index.html">Channel</a><a data-settings href="./config.html">Settings</a></nav>
+    </header>
+
+    <div class="crumb">
+      <span class="tenant" id="tenant">🔒 External tenant</span>
+      <span id="team"></span><span class="sep">›</span><b id="channel"></b>
+      <span class="live" id="live"><span class="dot"></span><span id="live-text">Connecting…</span></span>
+      <button class="ib" id="refresh" type="button" title="Refresh now" aria-label="Refresh now">
+        <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" /></svg>
+      </button>
+      <a class="ib" data-settings href="./config.html" title="Choose channel" aria-label="Choose channel">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" /></svg>
+      </a>
+    </div>
+
+    <main class="feed" id="feed" aria-live="polite"></main>
+    <div class="state" id="state" hidden></div>
+
+    <footer class="foot">
+      <span>👁 Read-only view of a channel in another tenant</span>
+      <a id="open-in-teams" target="_blank" rel="noopener noreferrer" hidden><span id="open-label">Open in Teams ↗</span></a>
+      <button class="btn" id="older" type="button" hidden>Load older messages</button>
+    </footer>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
