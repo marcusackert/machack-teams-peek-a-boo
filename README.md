@@ -17,7 +17,11 @@ Teams (tenant A) ──iframe──▶ index.html ──Graph (token for tenant 
                                  └─ sign-in: Teams auth window → auth-start.html → login.microsoftonline.com/{tenant B} → auth-end.html
 ```
 
-Teams single sign-on only issues tokens for your home tenant. The app therefore runs its own MSAL sign-in with the authority pinned to the **other** tenant, inside the Teams-managed auth window.
+Teams single sign-on only issues tokens for your home tenant. The app therefore runs its own MSAL sign-in with the authority pinned to the **other** tenant, **in your web browser**:
+
+- **Teams desktop/mobile:** sign-in opens in your default browser (`isExternal`), so it reuses browser sessions like Outlook on the web. When it finishes, `auth-end.html` returns to Teams through the `msteams://…/auth-callback` deep link.
+- **Teams on the web:** sign-in uses the Teams-managed auth window.
+- **Outside Teams:** sign-in opens in a new browser tab.
 
 ## Prerequisites
 

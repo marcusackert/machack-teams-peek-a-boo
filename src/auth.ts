@@ -121,25 +121,37 @@ export async function getToken(tenant: string, scopes: string[]): Promise<string
 }
 
 /**
- * Interactive sign-in against the external tenant.
- * Teams: host-managed auth window (iframes can't show the Entra sign-in page).
- * Browser: a plain popup running the same auth-start/auth-end pages.
+ * Interactive sign-in against the external tenant, in a real browser tab.
+ * Teams desktop/mobile: opens the default web browser (isExternal); auth-end returns to Teams via deep link.
+ * Teams on the web: Teams-managed auth window (it already is a browser).
+ * Outside Teams: a normal browser tab running the same auth-start/auth-end pages.
  */
 export async function signIn(tenant: string, scopes: string[]): Promise<TokenHandoff> {
   const url = pageUrl("auth-start.html", new URLSearchParams({ tenant, scopes: scopes.join(" ") }));
-  const { inTeams } = await initHost();
-  const raw = inTeams
-    ? await authentication.authenticate({ url, width: 600, height: 640 })
-    : await browserPopup(url);
-  const handoff = JSON.parse(raw) as TokenHandoff;
-  storeHandoff(tenant, handoff);
-  return handoff;
+  const { inTeams, context } = await initHost();
+  let raw: string;
+  if (inTeams) {
+    const external = context?.app.host.clientType !== "web";
+    raw = await authentication.authenticate({
+      // Teams fills in these placeholders; auth-end needs them to deep-link back.
+      url: external ? `${url}&oauthRedirectMethod={oauthRedirectMethod}&authId={authId}` : url,
+      width: 600,
+      height: 640,
+      isExternal: external,
+    });
+  } else {
+    raw = await browserTab(url);
+  }
+  const parsed = JSON.parse(raw) as TokenHandoff | { error: string };
+  if ("error" in parsed) throw new Error(parsed.error);
+  storeHandoff(tenant, parsed);
+  return parsed;
 }
 
-function browserPopup(url: string): Promise<string> {
+function browserTab(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    const w = window.open(url, "peekaboo-auth", "width=600,height=640");
-    if (!w) return reject(new Error("Popup blocked. Allow popups for this site and try again."));
+    const w = window.open(url, "_blank");
+    if (!w) return reject(new Error("The sign-in tab was blocked. Allow popups for this site and try again."));
     const onMsg = (e: MessageEvent) => {
       if (e.origin !== location.origin || e.data?.source !== "peekaboo-auth") return;
       cleanup();
@@ -149,7 +161,7 @@ function browserPopup(url: string): Promise<string> {
     const timer = setInterval(() => {
       if (w.closed) {
         cleanup();
-        reject(new Error("Sign-in window was closed."));
+        reject(new Error("The sign-in tab was closed."));
       }
     }, 500);
     const cleanup = () => {

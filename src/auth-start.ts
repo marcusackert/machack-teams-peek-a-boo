@@ -12,6 +12,14 @@ async function start() {
 
   // auth-end runs in this same window after the redirect and needs to know which tenant to finish.
   sessionStorage.setItem("peekaboo.authTenant", tenant);
+  // Set by Teams when sign-in runs in the external browser (isExternal); used to deep-link back.
+  const method = p.get("oauthRedirectMethod");
+  const authId = p.get("authId");
+  if (method && authId && !method.startsWith("{")) {
+    sessionStorage.setItem("peekaboo.authReturn", JSON.stringify({ method, authId }));
+  } else {
+    sessionStorage.removeItem("peekaboo.authReturn");
+  }
   const pca = await getMsal(tenant);
   await pca.loginRedirect({ scopes, prompt: "select_account" });
 }
